@@ -114,7 +114,7 @@ app.post('/api/rsvp', async (req, res) => {
         whatsappSent = await sendWhatsAppNotification({
           guestName: guestName.trim(),
           guestPhone: guestPhone.trim(),
-        });
+        }, pdfBuffer);
         console.log(whatsappSent ? '💬  WhatsApp sent' : '⚠️  WhatsApp sending returned false');
       } catch (waErr) {
         console.error('❌  WhatsApp error:', waErr.message);

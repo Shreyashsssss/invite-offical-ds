@@ -1031,6 +1031,58 @@
         grid-template-columns: 1fr
       }
     }
+    /* ═══════════════ FULLSCREEN TOGGLE ═══════════════ */
+    #fsToggle {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      z-index: 99999;
+      background: rgba(8, 4, 15, 0.45);
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 0 0 20px rgba(240, 192, 64, 0.15);
+      padding: 0;
+      outline: none;
+    }
+
+    #fsToggle:hover {
+      background: rgba(240, 192, 64, 0.12);
+      box-shadow: 0 0 35px rgba(240, 192, 64, 0.45);
+      transform: scale(1.15) rotate(90deg);
+    }
+
+    #fsToggle:active {
+      transform: scale(0.95);
+    }
+
+    #fsToggle svg {
+      width: 22px;
+      height: 22px;
+      fill: currentColor;
+    }
+
+    @media(max-width: 520px) {
+      #fsToggle {
+        top: 16px;
+        right: 16px;
+        width: 42px;
+        height: 42px;
+      }
+      #fsToggle svg {
+        width: 18px;
+        height: 18px;
+      }
+    }
   </style>
 </head>
 
@@ -1038,6 +1090,11 @@
 
   <!-- ═══════════════ PARTICLE CANVAS ═══════════════ -->
   <canvas id="particleCanvas"></canvas>
+
+  <!-- ═══════════════ FULLSCREEN TOGGLE ═══════════════ -->
+  <button id="fsToggle" onclick="toggleFullscreen()" title="Toggle Fullscreen">
+    <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+  </button>
 
   <!-- ═══════════════ SCREEN 1 — START ═══════════════ -->
   <div id="s1" class="screen visible">
@@ -1608,6 +1665,33 @@
           document.addEventListener('keydown', onGesture, { once: true });
           document.addEventListener('touchstart', onGesture, { once: true, passive: true });
         }
+        updateFsIcon();
+      });
+
+      window.toggleFullscreen = function() {
+        const el = document.documentElement;
+        if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement) {
+          const fn = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+          if (fn) fn.call(el);
+        } else {
+          const fn = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
+          if (fn) fn.call(document);
+        }
+      };
+
+      function updateFsIcon() {
+        const btn = document.getElementById('fsToggle');
+        if (!btn) return;
+        if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) {
+          btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/></svg>';
+        } else {
+          btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>';
+        }
+      }
+      
+      // Listen for all potential FS change events
+      ['fullscreenchange','webkitfullscreenchange','mozfullscreenchange','MSFullscreenChange'].forEach(ev => {
+        document.addEventListener(ev, updateFsIcon);
       });
     })();
   </script>

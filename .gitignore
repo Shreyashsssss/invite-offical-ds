@@ -11,3 +11,5 @@ backend/.wwebjs_auth/
 backend/.wwebjs_cache/
 backend/temp_invite.pdf
 backend/invitation_*.pdf
+.vercel
+.env*.local
